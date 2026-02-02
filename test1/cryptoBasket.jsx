@@ -36,13 +36,15 @@ export default function CryptoBasket({
   );
 
   const avgPricePerCoin =
-    Object.values(basket).reduce((curr, val) => curr + val.price, 0) /
-    Object.values(basket).length;
+    Object.values(basket).length === 0
+      ? 0
+      : Object.values(basket).reduce((curr, val) => curr + val.price, 0) /
+        Object.values(basket).length;
 
   const inputRef = React.useRef(null);
 
   const order = () => {
-    if (Object.keys(basket).every(key => basket[key]?.quantity) && comment) {
+    if (Object.keys(basket).length > 0 && Object.keys(basket).every(key => basket[key]?.quantity) && comment) {
       inputRef.current.blur();
       context.addOrder({ ...basket, comment });
     } else {
