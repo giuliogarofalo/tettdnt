@@ -64,10 +64,16 @@ export default function CryptoBuy() {
 
   const removeQuantity = name => {
     const removedFrom = basket[name];
-    setBasket({
-      ...basket,
-      [name]: { ...removedFrom, quantity: removedFrom.quantity - 1 },
-    });
+    if (removedFrom.quantity <= 1) {
+      const newBasket = { ...basket };
+      delete newBasket[name];
+      setBasket(newBasket);
+    } else {
+      setBasket({
+        ...basket,
+        [name]: { ...removedFrom, quantity: removedFrom.quantity - 1 },
+      });
+    }
   };
 
   const handlePageChange = (event, newPage) => {
