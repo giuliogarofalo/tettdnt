@@ -4,9 +4,8 @@ import CryptoTable from './cryptoTable';
 import React from 'react';
 import axios from 'axios';
 
-export const API_URL_PAGE = 'https://example.com/api/cryptos?page=';
-export const API_URL_CLOSE_EVENT =
-  'https://example.com/api/cryptos?close_event=';
+export const API_URL_PAGE = '/api/cryptos?page=';
+export const API_URL_CLOSE_EVENT = '/api/cryptos?close_event=';
 
 // Do not change the way the components and variables are exported and imported
 
