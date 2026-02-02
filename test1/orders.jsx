@@ -13,11 +13,12 @@ import Context from './context';
 
 export default function Orders({ orders = [] }) {
   const context = React.useContext(Context);
+  const ordersToDisplay = context?.orders || orders;
 
   return (
     <List sx={{ maxWidth: 400 }} data-testid="orders">
       <ListSubheader>Orders</ListSubheader>
-      {orders.map((order, index) => (
+      {ordersToDisplay.map((order, index) => (
         <ListItem key={order.id}>
           {/** * You do not need to change the way orders are displayed; */}
           <ListItemIcon>

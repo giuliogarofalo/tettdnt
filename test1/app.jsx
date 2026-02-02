@@ -11,10 +11,10 @@ export default function App() {
   ]);
 
   const addOrder = order =>
-    setOrders([...orders, { id: Math.floor(Math.random() * 1000), ...order }]);
+    setOrders(prevOrders => [...prevOrders, { id: Math.floor(Math.random() * 1000), ...order }]);
 
   return (
-    <Context.Provider value={{ addOrder }}>
+    <Context.Provider value={{ addOrder, orders }}>
       <CryptoBuy />
       <Orders orders={orders} />
     </Context.Provider>
