@@ -42,7 +42,7 @@ export default function CryptoBuy() {
 
   const handleClose = currency => {
     axios
-      .post(API_URL_CLOSE_EVENT + currency.id)
+      .get(API_URL_CLOSE_EVENT + currency.id)
       .then(() => {
         setOpenedCurrency(null);
         setOpen(false);
