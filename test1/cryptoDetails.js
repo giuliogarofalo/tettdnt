@@ -31,7 +31,7 @@ export default function CryptoDetails({ open, handleClose, currency }) {
     <Dialog open={open} maxWidth="sm">
       <DialogTitle>{currency?.name}</DialogTitle>
       <DialogContent>
-        <DialogContentText>response?.description</DialogContentText>
+        <DialogContentText>{response?.description}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} autoFocus>
