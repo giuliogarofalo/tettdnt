@@ -16,7 +16,7 @@ export default function App() {
   return (
     <Context.Provider value={{ addOrder }}>
       <CryptoBuy />
-      <Orders />
+      <Orders orders={orders} />
     </Context.Provider>
   );
 }
