@@ -20,7 +20,7 @@ export default function CryptoBuy() {
 
   React.useEffect(() => {
     getData();
-  }, []);
+  }, [page]);
 
   const getData = async () => {
     const response = await axios.get(API_URL_PAGE + page);
@@ -69,7 +69,7 @@ export default function CryptoBuy() {
     });
   };
 
-  const handlePageChange = newPage => {
+  const handlePageChange = (event, newPage) => {
     setPage(newPage);
   };
 
