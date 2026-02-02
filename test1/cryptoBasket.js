@@ -46,7 +46,7 @@ export default function CryptoBasket({
       inputRef.blur;
       addOrder({ ...basket, comment });
     } else {
-      inputRef.focus;
+      inputRef.current.focus();
     }
   };
 
