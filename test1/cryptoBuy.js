@@ -49,6 +49,7 @@ export default function CryptoBuy() {
         setCloseError(false);
       })
       .catch(() => {
+        setCloseError(true);
         setOpen(false);
       });
   };
