@@ -36,7 +36,7 @@ export default function CryptoBasket({
   );
 
   const avgPricePerCoin =
-    Object.values(basket).reduce((curr, val) => curr + val.price, 100) /
+    Object.values(basket).reduce((curr, val) => curr + val.price, 0) /
     Object.values(basket).length;
 
   const inputRef = React.useRef(null);
