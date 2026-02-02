@@ -20,7 +20,7 @@ export default function CryptoDetails({ open, handleClose, currency }) {
     if (currency?.id) {
       getData();
     }
-  }, []);
+  }, [currency]);
 
   const getData = async () => {
     const response = await axios.get(API_URL_DETAILS + currency.id);
