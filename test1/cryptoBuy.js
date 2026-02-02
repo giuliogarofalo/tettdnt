@@ -28,11 +28,11 @@ export default function CryptoBuy() {
   };
 
   const handleBuy = currency => {
+    if (basket[currency.name]) return;
     setBasket({
       ...basket,
       [currency.name]: { quantity: 1, price: currency.price },
     });
-    console.log(basket);
   };
 
   const handleOpen = currency => {
