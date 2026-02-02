@@ -58,7 +58,7 @@ export default function CryptoTable({
                       variant="outlined"
                       size="small"
                       style={{ marginLeft: '20px' }}
-                      onClick={handleOpen}
+                      onClick={() => handleOpen(row)}
                     >
                       Details
                     </Button>
