@@ -42,9 +42,9 @@ export default function CryptoBasket({
   const inputRef = React.useRef(null);
 
   const order = () => {
-    if (Object.keys(basket).every(key => basket[key]?.quantity) && !comment) {
-      inputRef.blur;
-      addOrder({ ...basket, comment });
+    if (Object.keys(basket).every(key => basket[key]?.quantity) && comment) {
+      inputRef.current.blur();
+      context.addOrder({ ...basket, comment });
     } else {
       inputRef.current.focus();
     }
