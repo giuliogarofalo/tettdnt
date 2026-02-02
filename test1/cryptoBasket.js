@@ -32,7 +32,7 @@ export default function CryptoBasket({
         (curr, val) => curr + val.quantity * val.price,
         0,
       ),
-    [],
+    [basket],
   );
 
   const avgPricePerCoin =
