@@ -38,7 +38,11 @@ export default function CryptoTable({
                   key={row.name}
                   sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 >
-                  <TableCell component="th" scope="row">
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    style={{ color: row.price < 100 ? 'green' : 'inherit' }}
+                  >
                     {row.name}
                   </TableCell>
                   <TableCell align="left">{row.price}</TableCell>
