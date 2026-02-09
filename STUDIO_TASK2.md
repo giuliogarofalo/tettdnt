@@ -234,6 +234,147 @@ const number = String(i + 1).padStart(padLength, '0');
 
 ---
 
+## Soluzione in Python (Elegante)
+
+Python rende questo problema molto più pulito grazie a `defaultdict`, `sorted`, list comprehension e `str.zfill`.
+
+### Soluzione completa
+
+```python
+from collections import defaultdict
+
+def solution(S):
+    if not S:
+        return ""
+
+    # Step 1: Parse
+    photos = []
+    for i, line in enumerate(S.split('\n')):
+        filename, city, timestamp = line.split(', ')
+        ext = filename.rsplit('.', 1)[1]  # rsplit prende l'ultima estensione
+        photos.append((i, city.strip(), timestamp.strip(), ext.strip()))
+
+    # Step 2: Raggruppa per città
+    groups = defaultdict(list)
+    for photo in photos:
+        groups[photo[1]].append(photo)
+
+    # Step 3: Ordina ogni gruppo per timestamp e assegna numeri
+    result = [''] * len(photos)
+    for city, group in groups.items():
+        group.sort(key=lambda p: p[2])  # Ordina per timestamp
+        pad = len(str(len(group)))      # Cifre necessarie per il padding
+        for num, (orig_idx, city, _, ext) in enumerate(group, 1):
+            result[orig_idx] = f"{city}{str(num).zfill(pad)}.{ext}"
+
+    return '\n'.join(result)
+```
+
+### Perché è più elegante di JavaScript?
+
+| Aspetto | JavaScript | Python |
+|---------|-----------|--------|
+| **Raggruppamento** | Ciclo for manuale con check `if (!obj[key])` | `defaultdict(list)` - una riga |
+| **Estensione** | `split('.').pop()` | `rsplit('.', 1)[1]` - più esplicito |
+| **Padding** | `while` loop o `padStart` | `str.zfill(pad)` - built-in |
+| **Ordinamento** | `sort` con comparator `(a, b) => ...` | `sort(key=lambda)` - più leggibile |
+| **String format** | Concatenazione `city + number + '.' + ext` | f-string `f"{city}{num}.{ext}"` |
+| **Destructuring** | Non disponibile nei for loop | `for num, (idx, city, _, ext)` nel loop |
+| **Enumerazione** | Indice manuale `i + 1` | `enumerate(group, 1)` - parte da 1 |
+
+### Versione ultra-compatta (one-liner style)
+
+```python
+from collections import defaultdict
+
+def solution(S):
+    if not S:
+        return ""
+
+    photos = [
+        (i, *line.split(', '))
+        for i, line in enumerate(S.split('\n'))
+    ]  # [(0, 'photo.jpg', 'Warsaw', '2013-09-05 14:08:15'), ...]
+
+    groups = defaultdict(list)
+    for i, filename, city, ts in photos:
+        groups[city].append((i, filename.rsplit('.', 1)[1], ts))
+
+    result = [''] * len(photos)
+    for city, group in groups.items():
+        group.sort(key=lambda x: x[2])
+        pad = len(str(len(group)))
+        for num, (idx, ext, _) in enumerate(group, 1):
+            result[idx] = f"{city}{str(num).zfill(pad)}.{ext}"
+
+    return '\n'.join(result)
+```
+
+### Trucchi Python da conoscere per il colloquio
+
+**1. `defaultdict` vs dizionario normale:**
+```python
+# Senza defaultdict (come in JavaScript)
+groups = {}
+if city not in groups:
+    groups[city] = []
+groups[city].append(photo)
+
+# Con defaultdict - automatico!
+groups = defaultdict(list)
+groups[city].append(photo)  # Crea la lista se non esiste
+```
+
+**2. `rsplit` vs `split` per l'estensione:**
+```python
+# split('.') su "my.photo.jpg" → ['my', 'photo', 'jpg'] poi .pop()
+# rsplit('.', 1) su "my.photo.jpg" → ['my.photo', 'jpg'] - più diretto!
+filename.rsplit('.', 1)[1]  # Splitta da DESTRA, max 1 volta
+```
+
+**3. `enumerate` con start:**
+```python
+# JavaScript: group.forEach((photo, i) => { num = i + 1; })
+# Python:
+for num, photo in enumerate(group, 1):  # num parte da 1, non da 0!
+    ...
+```
+
+**4. `zfill` per padding con zeri:**
+```python
+# JavaScript: while (number.length < padLength) number = '0' + number;
+# Python:
+str(5).zfill(3)  # → '005'
+str(42).zfill(3) # → '042'
+```
+
+**5. Unpacking nelle tuple:**
+```python
+# JavaScript: const { index, city, ext } = photo;
+# Python - direttamente nel for:
+for num, (orig_idx, city, _, ext) in enumerate(group, 1):
+    # _ ignora il valore del timestamp (non serve qui)
+```
+
+### Domande potenziali sulla versione Python
+
+- "Perché `defaultdict` invece di un dizionario normale?"
+  > Elimina il boilerplate del check `if key not in dict`. Quando accedi a una chiave inesistente, `defaultdict(list)` crea automaticamente una lista vuota. Più pulito e meno soggetto a errori.
+
+- "Perché `rsplit` invece di `split`?"
+  > `rsplit('.', 1)` splitta **da destra** con un limite di 1 split. Per `"my.photo.jpg"` produce `['my.photo', 'jpg']` mentre `split('.')` produce `['my', 'photo', 'jpg']`. `rsplit` è più robusto per nomi file con punti multipli.
+
+- "Perché `enumerate(group, 1)` e non range?"
+  > `enumerate` fornisce sia l'**indice** che l'**elemento** in un colpo solo. Il parametro `1` fa partire il conteggio da 1 invece che da 0, evitando il `+1` manuale. È più pythonico e meno soggetto a errori off-by-one.
+
+- "Qual è la complessità di `defaultdict`?"
+  > L'accesso e l'inserimento sono **O(1)** in media (come un dizionario normale). Il vantaggio è puramente sintattico, non prestazionale.
+
+- "Come gestiresti timestamp duplicati nella stessa città?"
+  > Il problema garantisce unicità, ma se servisse: si potrebbe aggiungere l'indice originale come tiebreaker nel `sort`: `key=lambda x: (x[2], x[0])`. Così foto con lo stesso timestamp vengono ordinate per posizione originale.
+
+---
+
 ## Errori Comuni da Evitare
 
 1. **Confondere `photo` con `photos`** - Errore di battitura classico

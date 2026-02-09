@@ -65,7 +65,10 @@ const handlePageChange = (event, newPage) => {
 
 **Domande potenziali:**
 - "Cosa succede se useEffect ha un array di dipendenze vuoto?"
+  > L'effect viene eseguito **solo una volta al mount** del componente. Non si riesegue mai, anche se le variabili usate al suo interno cambiano. È equivalente a `componentDidMount` nelle classi.
+
 - "Perché MUI passa l'event come primo parametro?"
+  > È una convenzione di MUI (e del DOM in generale): i callback ricevono sempre l'**event object come primo parametro** e il valore specifico come secondo. Se non lo gestisci nella signature, `newPage` riceve l'event object invece del numero di pagina.
 
 ---
 
@@ -91,7 +94,10 @@ style={{ marginLeft: '20px' }}
 
 **Domande potenziali:**
 - "Perché React usa camelCase per le proprietà CSS?"
+  > Perché gli stili inline in JSX sono **oggetti JavaScript**, e in JS le proprietà con trattino (`margin-left`) non sono sintatticamente valide senza bracket notation (`obj['margin-left']`). Il camelCase (`marginLeft`) è la convenzione standard per le proprietà JS.
+
 - "Quali sono le differenze tra inline styles e className in React?"
+  > **Inline styles:** oggetti JS applicati direttamente all'elemento, ideali per stili dinamici, hanno priorità CSS alta. **className:** riferisce a classi CSS esterne, più performante per stili statici, permette pseudo-selettori (`:hover`) e media queries che inline non supporta.
 
 ---
 
@@ -125,7 +131,10 @@ style={{ marginLeft: '20px' }}
 
 **Domande potenziali:**
 - "Come applichi stili condizionali in React?"
+  > Con il **ternary operator** inline: `style={{ color: condition ? 'green' : 'inherit' }}`. In alternativa, con className condizionali: `className={condition ? 'green-text' : ''}`, oppure usando librerie come `classnames`.
+
 - "Cosa fa `inherit` come valore CSS?"
+  > Indica che l'elemento **eredita il valore della proprietà dal suo elemento genitore**. Utile come fallback quando non vuoi applicare un colore specifico, mantenendo la coerenza visiva.
 
 ---
 
@@ -151,7 +160,10 @@ onClick={() => handleOpen(row)}
 
 **Domande potenziali:**
 - "Perché usiamo una arrow function invece di passare direttamente handleOpen?"
+  > Perché `handleOpen` richiede un **argomento specifico** (`row`). Se scrivi `onClick={handleOpen}`, React passa l'**event object** come argomento, non il `row`. L'arrow function `() => handleOpen(row)` crea una closure che cattura il `row` corrente e lo passa correttamente.
+
 - "Cosa succede se scrivi `onClick={handleOpen(row)}`?" (si esegue subito!)
+  > La funzione viene **eseguita immediatamente durante il render**, non al click! `handleOpen(row)` è una **chiamata di funzione**, non un riferimento. Questo causa: 1) esecuzione al render, 2) possibile loop infinito se la funzione aggiorna lo state, 3) `onClick` riceve il valore di ritorno di `handleOpen`, non la funzione.
 
 ---
 
@@ -177,7 +189,10 @@ axios.get(API_URL_CLOSE_EVENT + currency.id)
 
 **Domande potenziali:**
 - "Quando usi GET vs POST?"
+  > **GET:** per recuperare/leggere dati o notificare senza modificare lo stato del server. È idempotente (chiamarlo N volte produce lo stesso risultato). **POST:** per creare o modificare risorse. Invia dati nel body della request e non è idempotente.
+
 - "Perché un close_event usa GET?" (è una notifica, non crea risorse)
+  > Perché è una **semplice notifica** al server che il dialog è stato chiuso. Non sta creando o modificando una risorsa, sta solo segnalando un evento. Non servono dati nel body, e l'operazione è idempotente.
 
 ---
 
@@ -208,7 +223,10 @@ axios.get(API_URL_CLOSE_EVENT + currency.id)
 
 **Domande potenziali:**
 - "Come gestisci gli errori delle API in React?"
+  > Con **`.catch()`** sulle Promise oppure **`try/catch`** con async/await. In entrambi i casi, si aggiorna uno state di errore (es. `setError(true)`) per mostrare un messaggio all'utente. Pattern tipico: `setState` nel catch per triggerare un re-render con il feedback di errore.
+
 - "Perché è importante mostrare feedback di errore all'utente?"
+  > Senza feedback l'utente **non sa se l'azione è fallita** e non può decidere se riprovare. È un principio fondamentale di UX: ogni azione dell'utente deve avere una risposta visibile, sia in caso di successo che di errore.
 
 ---
 
@@ -234,7 +252,10 @@ axios.get(API_URL_CLOSE_EVENT + currency.id)
 
 **Domande potenziali:**
 - "Cosa fa l'optional chaining `?.`?"
+  > Accede a proprietà nested in modo **sicuro**: se l'oggetto è `null` o `undefined`, ritorna `undefined` invece di lanciare un `TypeError`. Esempio: `response?.description` equivale a `response && response.description` ma è più conciso.
+
 - "Quando usi le graffe `{}` in JSX?"
+  > Ogni volta che vuoi inserire un'**espressione JavaScript** nel markup JSX: variabili (`{name}`), calcoli (`{a + b}`), chiamate di funzione (`{fn()}`), ternary (`{x ? 'a' : 'b'}`). Senza graffe, il testo viene trattato come stringa letterale.
 
 ---
 
@@ -264,7 +285,10 @@ React.useEffect(() => {
 
 **Domande potenziali:**
 - "Cosa succede se non metti currency nelle dipendenze?"
+  > L'useEffect **non si riesegue** quando `currency` cambia. Il dialog mostra sempre i dati della **prima crypto selezionata** (stale data). L'effect è "bloccato" sulla closure iniziale e non vede i nuovi valori.
+
 - "Come decidi cosa mettere nell'array di dipendenze?"
+  > Ogni **variabile esterna** (props, state, funzioni) usata dentro l'effect che può cambiare nel tempo **deve essere inclusa**. Regola pratica: se la rimuovi e il comportamento cambia, allora è una dipendenza. Il linter `eslint-plugin-react-hooks` aiuta a verificarlo automaticamente.
 
 ---
 
@@ -301,7 +325,10 @@ const handleBuy = currency => {
 
 **Domande potenziali:**
 - "Perché usiamo early return invece di un else?"
+  > Rende il codice più **leggibile e piatto**: prima gestisci il caso speciale/eccezione e esci, poi procedi con il flusso principale senza nesting aggiuntivo. Riduce la complessità cognitiva (meno livelli di indentazione).
+
 - "Come verifichi se una key esiste in un oggetto?"
+  > Tre modi: 1) **`if (obj[key])`** - controlla se il valore è truthy (attenzione: `0` e `""` sono falsy!), 2) **`if (key in obj)`** - verifica l'esistenza della proprietà (anche ereditata), 3) **`obj.hasOwnProperty(key)`** - verifica solo le proprietà proprie, non quelle del prototype.
 
 ---
 
@@ -345,8 +372,13 @@ const removeQuantity = name => {
 
 **Domande potenziali:**
 - "Cosa fa l'operatore `delete`?"
+  > Rimuove una **proprietà** da un oggetto. `delete obj.key` elimina la coppia chiave-valore. Ritorna `true` se l'operazione è riuscita. Non funziona su variabili, solo su proprietà di oggetti.
+
 - "Perché creiamo una copia con spread prima di delete?"
+  > Per mantenere l'**immutabilità**: in React non si modifica direttamente lo state. Lo spread `{ ...basket }` crea un nuovo oggetto (shallow copy), su cui possiamo fare `delete` senza mutare l'originale.
+
 - "Perché non possiamo fare `delete basket[name]` direttamente?"
+  > Perché `basket` è lo **state di React**: mutarlo direttamente non triggera un re-render e viola il principio di immutabilità. React confronta i riferimenti per decidere se ri-renderizzare: se muti l'oggetto esistente, il riferimento resta lo stesso e React non "vede" il cambiamento.
 
 ---
 
@@ -378,7 +410,10 @@ const avgPricePerCoin =
 
 **Domande potenziali:**
 - "Cosa fa il secondo parametro di reduce?"
+  > È il **valore iniziale dell'accumulatore**. `reduce((acc, val) => acc + val, 0)` - lo `0` è il punto di partenza. Senza di esso, reduce usa il **primo elemento** dell'array come valore iniziale e parte dal secondo, il che può causare bug se l'array è vuoto (lancia `TypeError`).
+
 - "Cosa succede se dividi per zero in JavaScript?" (Infinity o NaN)
+  > JS **non lancia un errore**: `5 / 0` ritorna `Infinity`, `-5 / 0` ritorna `-Infinity`, `0 / 0` ritorna `NaN`. Per questo è importante il check `length === 0 ? 0 : ...` prima di dividere: evita di mostrare `NaN` o `Infinity` nell'interfaccia.
 
 ---
 
@@ -414,8 +449,13 @@ const sum = React.useMemo(
 
 **Domande potenziali:**
 - "Qual è la differenza tra useMemo e useCallback?"
+  > **`useMemo`** memoizza il **risultato** di una computazione (un valore calcolato). **`useCallback`** memoizza la **funzione stessa** (il riferimento). `useCallback(fn, deps)` equivale a `useMemo(() => fn, deps)`. useCallback è utile quando passi callback a componenti figlio ottimizzati con `React.memo`.
+
 - "Quando dovresti usare useMemo?"
+  > Quando hai **calcoli costosi** che non devono rieseguire ad ogni render (es. filtrare/sommare grandi array), o quando il valore calcolato è passato come prop a componenti ottimizzati con `React.memo`. Non usarlo per operazioni triviali: l'overhead della memoizzazione supererebbe il beneficio.
+
 - "Cosa succede se le dipendenze sono sbagliate?"
+  > Se **mancano dipendenze**, useMemo restituisce un valore **stale** (vecchio, non aggiornato). Se ne metti **troppe**, ricalcola inutilmente ad ogni render, vanificando l'ottimizzazione. Il linter ESLint aiuta a identificare dipendenze mancanti.
 
 ---
 
@@ -441,8 +481,13 @@ inputRef.current.focus();  // .current per accedere al DOM, () per chiamare
 
 **Domande potenziali:**
 - "Cosa contiene `inputRef.current`?"
+  > Il riferimento all'**elemento DOM reale** (l'`<input>` HTML) a cui è associato tramite l'attributo `ref={inputRef}`. Prima del mount, `.current` è `null`. Dopo il mount, contiene il nodo DOM e puoi chiamare metodi nativi come `.focus()`, `.blur()`, `.value`.
+
 - "Perché useRef e non querySelector?"
+  > `useRef` è il modo **React-idiomatico**: non dipende dal DOM globale, funziona con il virtual DOM, si aggiorna automaticamente quando il componente si monta/smonta, ed è **sicuro** in ambienti con SSR. `querySelector` cerca nel DOM reale e potrebbe trovare elementi sbagliati se ci sono duplicati.
+
 - "Cosa succede se scrivi `fn` invece di `fn()`?"
+  > `fn` è un **riferimento** alla funzione (non la esegue). `fn()` la **invoca**. Scrivere `inputRef.focus` senza `()` non fa nulla: stai solo leggendo il riferimento al metodo senza chiamarlo. È un bug silenzioso perché non lancia errori.
 
 ---
 
@@ -488,7 +533,10 @@ const order = () => {
 
 **Domande potenziali:**
 - "Come accedi a una funzione dal Context?"
+  > 1) Importa il Context: `import { Context } from './context'`. 2) Usa l'hook: `const context = React.useContext(Context)`. 3) Chiama la funzione: `context.addOrder(data)`. Il componente deve essere **dentro** il `<Context.Provider>` nell'albero dei componenti.
+
 - "Perché il check era invertito (! invece di niente)?"
+  > `!comment` è `true` quando comment è **vuoto/falsy** (stringa vuota, null, undefined). Ma la logica richiede che il commento **sia presente** per procedere con l'ordine. Quindi serve `comment` (truthy = non vuoto), non `!comment`. Un errore logico classico che inverte la condizione di validazione.
 
 ---
 
@@ -538,7 +586,10 @@ export default function Orders({ orders = [] }) {
 
 **Domande potenziali:**
 - "Perché passare orders sia via props che via context?"
+  > È un **fallback pattern**: il context ha priorità, ma se non è disponibile (es. in testing o in un contesto senza Provider) si usano le props come default. Rende il componente più **riusabile e testabile**: nei test puoi passare orders direttamente come prop senza dover wrappare con un Provider.
+
 - "Cosa fa `?.` (optional chaining)?"
+  > Accede in modo **sicuro** a proprietà di oggetti potenzialmente `null` o `undefined`. `context?.orders` ritorna `undefined` se `context` è nullish, invece di lanciare `TypeError: Cannot read property 'orders' of null`. È equivalente a `context && context.orders` ma più conciso e leggibile.
 
 ---
 
@@ -590,26 +641,42 @@ const inputRef = useRef(null);
 ## Domande da Colloquio Comuni
 
 1. **"Spiega il ciclo di vita di un componente React con hooks"**
-   - Mount: useEffect con [] esegue
-   - Update: useEffect con [deps] esegue se deps cambiano
-   - Unmount: cleanup function di useEffect
+   > - **Mount:** `useEffect(() => {...}, [])` esegue una sola volta dopo il primo render. Equivale a `componentDidMount`.
+   > - **Update:** `useEffect(() => {...}, [deps])` riesegue ogni volta che una dipendenza cambia. Equivale a `componentDidUpdate` con condizione.
+   > - **Unmount:** La funzione di cleanup `return () => {...}` dentro useEffect esegue prima che il componente venga rimosso dal DOM. Equivale a `componentWillUnmount`. Utile per rimuovere event listeners, cancellare timer, o annullare richieste API.
+   > - **Esempio completo:**
+   > ```javascript
+   > useEffect(() => {
+   >   const timer = setInterval(fetchData, 5000);  // Mount/Update
+   >   return () => clearInterval(timer);            // Cleanup
+   > }, [url]);
+   > ```
 
 2. **"Differenza tra useMemo e useCallback?"**
-   - useMemo: memoizza un VALORE
-   - useCallback: memoizza una FUNZIONE
+   > - **`useMemo(() => value, [deps])`:** memoizza il **risultato** di una computazione. Ricalcola solo quando le dipendenze cambiano. Uso tipico: calcoli costosi come somme, filtri, ordinamenti su grandi dataset.
+   > - **`useCallback((args) => {...}, [deps])`:** memoizza il **riferimento alla funzione**. La funzione non viene ricreata ad ogni render. Uso tipico: passare callback stabili a componenti figlio wrappati con `React.memo` per evitare re-render inutili.
+   > - **Relazione:** `useCallback(fn, deps)` equivale a `useMemo(() => fn, deps)`.
 
 3. **"Come funziona il Context in React?"**
-   - Provider avvolge i componenti
-   - useContext() per leggere i valori
-   - Evita prop drilling
+   > - **Creazione:** `const MyContext = React.createContext(defaultValue)` - crea il context con un valore di default.
+   > - **Provider:** `<MyContext.Provider value={{data, fn}}>` - avvolge i componenti che devono accedere ai dati. Il `value` contiene i dati e funzioni condivise.
+   > - **Consumer:** `const ctx = React.useContext(MyContext)` - legge i valori dal Provider più vicino nell'albero.
+   > - **Scopo:** Evita il **prop drilling** (passare props attraverso molti livelli di componenti intermedi). Ideale per dati globali: tema, autenticazione, lingua, carrello.
+   > - **Attenzione:** Quando il `value` del Provider cambia, **tutti** i consumer si ri-renderizzano.
 
 4. **"Perché React richiede keys nelle liste?"**
-   - Per identificare quale elemento è cambiato
-   - Ottimizza il re-rendering
+   > - React usa le keys per **identificare univocamente** ogni elemento in una lista durante la riconciliazione (diffing del Virtual DOM).
+   > - Senza keys (o con keys come indici), React non sa quale elemento è stato aggiunto, rimosso o spostato, e deve **ri-renderizzare l'intera lista**.
+   > - Con keys stabili e univoche, React **ottimizza il re-rendering**: aggiorna solo gli elementi modificati.
+   > - **Non usare l'indice come key** se la lista può essere riordinata o filtrata: causa bug di stato e performance peggiori.
+   > - Key ideale: un **ID univoco** dal database o dai dati stessi.
 
 5. **"Cosa sono le controlled components?"**
-   - Il valore dell'input è controllato dallo state React
-   - onChange aggiorna lo state, value legge dallo state
+   > - Un input il cui valore è **controllato dallo state React**, non dal DOM.
+   > - **`value={state}`** legge dallo state, **`onChange={(e) => setState(e.target.value)}`** aggiorna lo state ad ogni modifica.
+   > - React diventa la "single source of truth" per il valore dell'input.
+   > - **Vantaggi:** validazione in tempo reale, formattazione automatica, controllo completo sull'input, facile da testare.
+   > - **Uncontrolled component** (alternativa): usa `ref` per leggere il valore dal DOM (`inputRef.current.value`). Meno controllo ma più semplice per form basici.
 
 ---
 
